@@ -1,74 +1,68 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* =========================
-     AUTOMATSKI ZOOM + FLIP
-  ========================== */
+  /* =========================================
+     1️⃣ AUTOMATSKI INTRO (ZOOM + FLIP)
+  ========================================= */
 
   const card = document.getElementById("card");
   const hero = document.querySelector(".hero");
 
+  // zoom već radi preko CSS animacije
+  // nakon 1.6s radimo flip
   setTimeout(() => {
-    card.classList.add("zoomed");
+    card?.classList.add("flipped");
+  }, 1600);
 
-    setTimeout(() => {
-      card.classList.add("flipped");
-      hero.classList.add("sticky");
-    }, 1200);
-
-  }, 600);
-
-
-
-  /* =========================
-     OVERLAY OTVARANJE
-  ========================== */
-
-  const overlay = document.getElementById("overlay");
-  const overlayImg = document.getElementById("overlayImage");
-  const openOverlay = document.getElementById("openOverlay");
-  const closeOverlay = document.getElementById("closeOverlay");
-  const nextSide = document.getElementById("nextSide");
-
-  let currentSide = "front";
-
-  openOverlay?.addEventListener("click", () => {
-    overlay.classList.remove("hidden");
-    overlayImg.src = "assets/invite-front.webp";
-    currentSide = "front";
-  });
-
-  closeOverlay?.addEventListener("click", () => {
-    overlay.classList.add("hidden");
-  });
-
-  nextSide?.addEventListener("click", () => {
-    if (currentSide === "front") {
-      overlayImg.src = "assets/invite-back.webp";
-      currentSide = "back";
-    } else {
-      overlayImg.src = "assets/invite-front.webp";
-      currentSide = "front";
-    }
-  });
+  // nakon flip-a smanjujemo hero
+  setTimeout(() => {
+    hero?.classList.add("sticky");
+  }, 2800);
 
 
 
-  /* =========================
-     SCROLL NA FORMU
-  ========================== */
+  /* =========================================
+     2️⃣ FULLSCREEN VIEWER (ODVOJEN)
+  ========================================= */
 
-  const scrollBtn = document.getElementById("scrollToForm");
-  const formSection = document.querySelector(".rsvp-section");
+  const openBtn = document.getElementById("openBtn");
+  const viewer = document.getElementById("viewer");
+  const viewerImg = document.getElementById("viewer-img");
+  const closeViewer = document.getElementById("closeViewer");
+  const nextSlide = document.getElementById("nextSlide");
 
-  scrollBtn?.addEventListener("click", () => {
-    formSection.scrollIntoView({ behavior: "smooth" });
-  });
+  const slides = [
+    "assets/invite-front.webp",
+    "assets/invite-back.webp"
+  ];
+
+  let current = 0;
+
+  function openViewer() {
+    current = 0;
+    viewerImg.src = slides[current];
+    viewer.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    viewer.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+
+  function next() {
+    current = (current + 1) % slides.length;
+    viewerImg.src = slides[current];
+  }
+
+  openBtn?.addEventListener("click", openViewer);
+  closeViewer?.addEventListener("click", closeModal);
+  nextSlide?.addEventListener("click", next);
 
 
 
-  /* =========================
-     DODAVANJE ČLANOVA
-  ========================== */
+  /* =========================================
+     3️⃣ DODAVANJE ČLANOVA
+  ========================================= */
 
   const membersContainer = document.getElementById("members-container");
   const addMemberBtn = document.getElementById("add-member");
@@ -87,25 +81,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-  /* =========================
-     SLANJE U GOOGLE SHEET
-  ========================== */
+  /* =========================================
+     4️⃣ SLANJE U GOOGLE SHEET
+  ========================================= */
 
   const form = document.getElementById("rsvp-form");
   const msg = document.getElementById("msg");
 
-  const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzjjwwSSPJryeGb1FYgdpuEdKkoGJPcba9gRonuRERc2FbuwMbdZFtolE8Ztf5mCZ4e/exec";
+  const ENDPOINT_URL = "TU_STAVI_SVOJ_SCRIPT_URL";
   const SECRET_TOKEN = "LENA2026";
 
   form?.addEventListener("submit", async (e) => {
 
     e.preventDefault();
-
-    const submitBtn = form.querySelector(".submit-btn");
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Šalje se...";
-
-    msg.textContent = "";
 
     const formData = new FormData(form);
 
@@ -114,9 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!email && !phone) {
       msg.textContent = "Molimo unesite e-mail ili broj mobitela.";
-      msg.className = "message error";
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Pošalji potvrdu";
+      msg.className = "message message--error";
       return;
     }
 
@@ -126,15 +112,25 @@ document.addEventListener("DOMContentLoaded", () => {
       if (val) members.push(val);
     });
 
-    const params = new URLSearchParams();
-    params.set("familyName", formData.get("familyName"));
-    params.set("email", email);
-    params.set("phone", phone);
-    params.set("attending", formData.get("attending"));
-    params.set("members", JSON.stringify(members));
-    params.set("token", SECRET_TOKEN);
+    const payload = {
+      familyName: formData.get("familyName") || "",
+      email,
+      phone,
+      attending: formData.get("attending") || "",
+      members,
+      token: SECRET_TOKEN
+    };
 
     try {
+
+      const params = new URLSearchParams();
+      Object.keys(payload).forEach(key => {
+        if (key === "members") {
+          params.set("members", JSON.stringify(payload.members));
+        } else {
+          params.set(key, payload[key]);
+        }
+      });
 
       const res = await fetch(ENDPOINT_URL, {
         method: "POST",
@@ -144,20 +140,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await res.json();
 
-      if (!data.ok) throw new Error();
+      if (!data.ok) {
+        msg.textContent = data.message || "Greška pri slanju.";
+        msg.className = "message message--error";
+        return;
+      }
 
-      msg.textContent = "Hvala, vaš odgovor je zaprimljen 💛";
-      msg.className = "message success";
+      msg.textContent = data.message || "Hvala! Vaš odgovor je zaprimljen.";
+      msg.className = "message message--success";
 
       form.reset();
 
     } catch (err) {
       msg.textContent = "Greška pri slanju. Pokušajte ponovno.";
-      msg.className = "message error";
+      msg.className = "message message--error";
     }
 
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Pošalji potvrdu";
   });
 
 });
