@@ -93,70 +93,83 @@ const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzjjwwSSPJryeGb1FY
 
     form?.addEventListener("submit", async (e) => {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        const formData = new FormData(form);
+    const submitBtn = form.querySelector("button[type='submit']");
+    submitBtn.disabled = true;
+    submitBtn.classList.add("loading");
+    submitBtn.textContent = "Šalje se...";
 
-        const email = formData.get("email")?.toString().trim() || "";
-        const phone = formData.get("phone")?.toString().trim() || "";
+    msg.textContent = "";
+    msg.className = "message";
 
-        if (!email && !phone) {
-            msg.textContent = "Molimo unesite e-mail ili broj mobitela.";
-            msg.className = "message message--error";
-            return;
-        }
+    const formData = new FormData(form);
 
-        const members = [];
-        document.querySelectorAll('input[name="memberNames[]"]').forEach(input => {
-            const val = input.value.trim();
-            if (val) members.push(val);
-        });
+    const email = formData.get("email")?.toString().trim() || "";
+    const phone = formData.get("phone")?.toString().trim() || "";
 
-        const payload = {
-            familyName: formData.get("familyName") || "",
-            email,
-            phone,
-            attending: formData.get("attending") || "",
-            members,
-            token: SECRET_TOKEN
-        };
+    if (!email && !phone) {
+        msg.textContent = "Molimo unesite e-mail ili broj mobitela.";
+        msg.className = "message message--error";
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("loading");
+        submitBtn.textContent = "Pošalji potvrdu";
+        return;
+    }
 
-        try {
-
-            const params = new URLSearchParams();
-            Object.keys(payload).forEach(key => {
-                if (key === "members") {
-                    params.set("members", JSON.stringify(payload.members));
-                } else {
-                    params.set(key, payload[key]);
-                }
-            });
-
-            const res = await fetch(ENDPOINT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: params.toString()
-            });
-
-            const data = await res.json();
-
-            if (!data.ok) {
-                msg.textContent = data.message || "Greška pri slanju.";
-                msg.className = "message message--error";
-                return;
-            }
-
-            msg.textContent = data.message || "Hvala! Vaš odgovor je zaprimljen.";
-            msg.className = "message message--success";
-
-            form.reset();
-
-        } catch (err) {
-            msg.textContent = "Greška pri slanju. Pokušajte ponovno.";
-            msg.className = "message message--error";
-        }
-
+    const members = [];
+    document.querySelectorAll('input[name="memberNames[]"]').forEach(input => {
+        const val = input.value.trim();
+        if (val) members.push(val);
     });
 
+    const payload = {
+        familyName: formData.get("familyName") || "",
+        email,
+        phone,
+        attending: formData.get("attending") || "",
+        members,
+        token: SECRET_TOKEN
+    };
+
+    try {
+
+        const params = new URLSearchParams();
+        Object.keys(payload).forEach(key => {
+            if (key === "members") {
+                params.set("members", JSON.stringify(payload.members));
+            } else {
+                params.set(key, payload[key]);
+            }
+        });
+
+        const res = await fetch(ENDPOINT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString()
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+            throw new Error(data.message);
+        }
+
+        msg.textContent = "Hvala, vaš odgovor je zaprimljen 💛";
+        msg.className = "message message--success";
+
+        form.reset();
+
+    } catch (err) {
+        msg.textContent = "Greška pri slanju. Pokušajte ponovno.";
+        msg.className = "message message--error";
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("loading");
+    submitBtn.textContent = "Pošalji potvrdu";
+
 });
+
+
 
