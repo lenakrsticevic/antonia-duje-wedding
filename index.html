@@ -1,94 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hr">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Antonia & Duje – 13. lipnja 2026.</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Antonia i Duje</title>
 
-  <!-- WhatsApp / Facebook preview -->
-  <meta property="og:title" content="Antonia & Duje – 13. lipnja 2026." />
-  <meta property="og:description" content="Pozvani ste na naše vjenčanje. Potvrdite dolazak online." />
-  <meta property="og:image" content="https://antonia-duje-wedding-8axilnu1p-lenakrsticevics-projects.vercel.app/assets/preview.jpg" />
-  <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta property="og:title" content="Antonia i Duje – 13. lipnja 2026." />
+    <meta property="og:description" content="Pozivamo vas da s nama podijelite radost našeg vjenčanja." />
+    <meta property="og:image" content="https://tvoj-domena.vercel.app/assets/invite-front.webp" />
+    <meta property="og:type" content="website" />
 
-  <link rel="stylesheet" href="styles.css" />
+    <meta name="twitter:card" content="summary_large_image" />
+
 </head>
+
 <body>
 
-  <!-- HERO / POZIVNICA -->
-  <section class="hero">
+    <header class="hero">
+        <div class="card" id="card">
+            <div class="card__inner">
+                <div class="card__face card__face--front">
+                    <img src="assets/invite-front.webp" alt="">
+                </div>
+                <div class="card__face card__face--back">
+                    <img src="assets/invite-back.webp" alt="">
+                </div>
+            </div>
+        </div>
 
-    <div class="card-container">
-      <div id="card" class="card">
-        <div class="card-face front">
-          <img src="assets/invite-front.webp" alt="Pozivnica prednja strana">
-        </div>
-        <div class="card-face back">
-          <img src="assets/invite-back.webp" alt="Pozivnica stražnja strana">
-        </div>
-      </div>
+        <button id="openBtn" class="btn">Otvori pozivnicu</button>
+    </header>
+
+    <section class="form-section">
+        <h2>Potvrda dolaska</h2>
+
+        <form id="rsvp-form">
+
+            <div class="field">
+                <label>Prezime obitelji</label>
+                <input type="text" name="familyName" required>
+            </div>
+
+            <div class="field">
+                <label>E-mail</label>
+                <input type="email" name="email" placeholder="nije obavezno ako unosite mobitel">
+            </div>
+
+            <div class="field">
+                <label>Broj mobitela</label>
+                <input type="tel" name="phone" placeholder="nije obavezno ako unosite e-mail">
+            </div>
+
+            <div class="field">
+                <label>Dolazite li?</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="attending" value="DA" required>
+                        <span>Da, dolazimo</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="attending" value="NE" required>
+                        <span>Nažalost ne dolazimo</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Članovi obitelji</label>
+                <div id="members-container">
+                    <div class="member-row">
+                        <input type="text" name="memberNames[]" placeholder="Ime i prezime">
+                    </div>
+                </div>
+                <button type="button" id="add-member" class="btn">Dodaj člana</button>
+            </div>
+
+            <button type="submit" class="btn">Pošalji potvrdu</button>
+
+            <p id="msg" class="message"></p>
+
+        </form>
+
+    </section>
+
+    <script src="main.js"></script>
+    <!-- FULLSCREEN VIEWER -->
+    <div id="viewer" class="viewer">
+        <button id="closeViewer" class="viewer-close">✕</button>
+        <img id="viewer-img" src="" alt="">
+        <button id="nextSlide" class="viewer-next">›</button>
     </div>
 
-    <div class="hero-buttons">
-      <button id="openOverlay" class="btn-primary">Otvori pozivnicu</button>
-      <button id="scrollToForm" class="btn-secondary">Potvrda dolaska</button>
-    </div>
-
-    <p class="hero-note">
-      Potvrdu dolaska možete poslati na kontakt broj ili online na ovoj stranici.
-    </p>
-
-  </section>
-
-
-  <!-- FULLSCREEN OVERLAY -->
-  <div id="overlay" class="overlay hidden">
-    <button id="closeOverlay" class="overlay-close">×</button>
-    <button id="nextSide" class="overlay-next">›</button>
-
-    <img id="overlayImage" src="assets/invite-front.webp" />
-  </div>
-
-
-  <!-- RSVP -->
-  <section class="rsvp-section">
-
-    <h2>Potvrda dolaska</h2>
-
-    <form id="rsvp-form">
-
-      <input type="text" name="familyName" placeholder="Prezime obitelji" required />
-
-      <input type="email" name="email" placeholder="Email (nije obavezno)" />
-      <input type="tel" name="phone" placeholder="Broj mobitela (nije obavezno)" />
-
-      <div class="radio-group">
-        <label>
-          <input type="radio" name="attending" value="DA" required>
-          Dolazim
-        </label>
-        <label>
-          <input type="radio" name="attending" value="NE">
-          Ne dolazim
-        </label>
-      </div>
-
-      <div id="members-container"></div>
-
-      <button type="button" id="add-member" class="add-member">
-        + Dodaj člana
-      </button>
-
-      <button type="submit" class="submit-btn">
-        Pošalji potvrdu
-      </button>
-
-      <div id="msg" class="message"></div>
-
-    </form>
-
-  </section>
-
-  <script src="main.js"></script>
 </body>
+
 </html>
