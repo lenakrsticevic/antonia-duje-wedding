@@ -88,85 +88,98 @@ document.addEventListener("DOMContentLoaded", () => {
         membersContainer.appendChild(row);
     });
 
+/* =========================
+   5️⃣ SLANJE U GOOGLE SHEET
+========================= */
 
-    /* =========================
-       5️⃣ SLANJE U GOOGLE SHEET
-    ========================== */
+const form = document.getElementById("rsvp-form");
+const msg = document.getElementById("msg");
 
-    const form = document.getElementById("rsvp-form");
-    const msg = document.getElementById("msg");
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzjjwwSSPJryeGb1FYgdpuEdKkoGJPcba9gRonuRERc2FbuwMbdZFtolE8Ztf5mCZ4e/exec";
+const SECRET_TOKEN = "LENA2026";
 
-    const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzjjwwSSPJryeGb1FYgdpuEdKkoGJPcba9gRonuRERc2FbuwMbdZFtolE8Ztf5mCZ4e/exec";
-    const SECRET_TOKEN = "LENA2026";
+form?.addEventListener("submit", async (e) => {
 
-    form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        e.preventDefault();
+    msg.textContent = "Slanje u tijeku...";
+    msg.className = "";
 
-        msg.textContent = "Slanje u tijeku...";
-        msg.className = "";
+    const formData = new FormData(form);
 
-        const formData = new FormData(form);
+    const email = formData.get("email")?.toString().trim() || "";
+    const phone = formData.get("phone")?.toString().trim() || "";
+    const primaryName = formData.get("primaryName")?.toString().trim() || "";
 
-        const email = formData.get("email")?.toString().trim() || "";
-        const phone = formData.get("phone")?.toString().trim() || "";
+    if (!email && !phone) {
+        msg.textContent = "Molimo unesite e-mail ili broj mobitela.";
+        msg.className = "message message--error";
+        return;
+    }
 
-        if (!email && !phone) {
-            msg.textContent = "Molimo unesite e-mail ili broj mobitela.";
+    if (!primaryName) {
+        msg.textContent = "Molimo unesite barem jedno ime i prezime.";
+        msg.className = "message message--error";
+        return;
+    }
+
+    const members = [];
+
+    // PRVI član (obavezni)
+    members.push(primaryName);
+
+    // Dodatni članovi
+    document.querySelectorAll('input[name="memberNames[]"]').forEach(input => {
+        const val = input.value.trim();
+        if (val) members.push(val);
+    });
+
+    const payload = {
+        familyName: formData.get("familyName") || "",
+        email,
+        phone,
+        attending: formData.get("attending") || "",
+        members,
+        token: SECRET_TOKEN
+    };
+
+    try {
+
+        const params = new URLSearchParams();
+
+        Object.keys(payload).forEach(key => {
+            if (key === "members") {
+                params.set("members", JSON.stringify(payload.members));
+            } else {
+                params.set(key, payload[key]);
+            }
+        });
+
+        const res = await fetch(ENDPOINT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString()
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+            msg.textContent = data.message || "Greška pri slanju.";
             msg.className = "message message--error";
             return;
         }
 
-        const members = [];
-        document.querySelectorAll('input[name="memberNames[]"]').forEach(input => {
-            const val = input.value.trim();
-            if (val) members.push(val);
-        });
+        msg.textContent = "Hvala! Vaš odgovor je zaprimljen.";
+        msg.className = "message message--success";
 
-        const payload = {
-            familyName: formData.get("familyName") || "",
-            email,
-            phone,
-            attending: formData.get("attending") || "",
-            members,
-            token: SECRET_TOKEN
-        };
+        form.reset();
 
-        try {
+    } catch (err) {
+        msg.textContent = "Greška pri slanju. Pokušajte ponovno.";
+        msg.className = "message message--error";
+    }
 
-            const params = new URLSearchParams();
-            Object.keys(payload).forEach(key => {
-                if (key === "members") {
-                    params.set("members", JSON.stringify(payload.members));
-                } else {
-                    params.set(key, payload[key]);
-                }
-            });
+});
 
-            const res = await fetch(ENDPOINT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: params.toString()
-            });
-
-            const data = await res.json();
-
-            if (!data.ok) {
-                msg.textContent = data.message || "Greška pri slanju.";
-                msg.className = "message message--error";
-                return;
-            }
-
-            msg.textContent = "Hvala! Vaš odgovor je zaprimljen.";
-            msg.className = "message message--success";
-
-            form.reset();
-
-        } catch (err) {
-            msg.textContent = "Greška pri slanju. Pokušajte ponovno.";
-            msg.className = "message message--error";
-        }
-
-    });
 
 });
