@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    window.scrollTo(0, 0);
+
+
     /* =========================
        1️⃣ AUTOMATSKI INTRO
     ========================== */
