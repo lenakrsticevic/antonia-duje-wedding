@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const form = document.getElementById("rsvp-form");
 const msg = document.getElementById("msg");
 
-const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzG--YqLmetA8qgh-czVG-gtzbcO2Vrl8ZDizvyvzBC86yUobzpANcJtSy22GeWbNq3/exec";
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbz0W45eAZFrzgEx82aTRH25ypw180kz8_38ReEbFUHIIEU6hqR8OjQGuLYMA16f19Ct/exec";
 const SECRET_TOKEN = "LENA2026";
 
 form?.addEventListener("submit", async (e) => {
