@@ -1,98 +1,106 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hr">
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Antonia i Duje</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Antonia & Duje</title>
 
     <link rel="stylesheet" href="styles.css" />
-    <meta property="og:title" content="Antonia i Duje – 13. lipnja 2026." />
-    <meta property="og:description" content="Pozivamo vas da s nama podijelite radost našeg vjenčanja." />
-    <meta property="og:image" content="https://tvoj-domena.vercel.app/assets/invite-front.webp" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- WhatsApp preview -->
+    <meta property="og:title" content="Antonia & Duje – 13. lipnja 2026." />
+    <meta property="og:description" content="Pozivamo Vas da s nama podijelite radost našeg vjenčanja." />
+    <meta property="og:image" content="https://antonia-duje-wedding.vercel.app/assets/invite-front.webp" />
     <meta property="og:type" content="website" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-
 </head>
 
 <body>
 
-    <header class="hero">
+    <!-- HERO / POZIVNICA -->
+    <section class="hero">
         <div class="card" id="card">
             <div class="card__inner">
                 <div class="card__face card__face--front">
-                    <img src="assets/invite-front.webp" alt="">
+                    <img src="assets/invite-front.webp" alt="Pozivnica front">
                 </div>
                 <div class="card__face card__face--back">
-                    <img src="assets/invite-back.webp" alt="">
+                    <img src="assets/invite-back.webp" alt="Pozivnica back">
                 </div>
             </div>
         </div>
 
-        <button id="openBtn" class="btn">Otvori pozivnicu</button>
-    </header>
+        <!-- BOTUNI -->
+        <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+            <button class="btn" id="openBtn">Otvori pozivnicu</button>
+            <button class="btn" id="rsvpBtn">Potvrda dolaska</button>
+        </div>
 
-    <section class="form-section">
-        <h2>Potvrda dolaska</h2>
+        <p style="margin-top:20px; font-size:14px; opacity:.7; text-align:center; max-width:400px;">
+            Potvrdu dolaska možete poslati na kontakt broj ili online na ovoj stranici.
+        </p>
+    </section>
+
+    <!-- FULLSCREEN VIEWER -->
+    <div class="viewer" id="viewer">
+        <button class="viewer-close" id="closeViewer">×</button>
+        <img id="viewer-img" src="" alt="Preview">
+        <button class="viewer-next" id="nextSlide">›</button>
+    </div>
+
+    <!-- FORMA -->
+    <section class="form-section" id="formSection">
+        <h2>Potvrdite dolazak</h2>
 
         <form id="rsvp-form">
 
             <div class="field">
                 <label>Prezime obitelji</label>
-                <input type="text" name="familyName" required>
+                <input type="text" name="familyName" required />
             </div>
 
             <div class="field">
-                <label>E-mail</label>
-                <input type="email" name="email" placeholder="nije obavezno ako unosite mobitel">
+                <label>Email (nije obavezno)</label>
+                <input type="email" name="email" />
             </div>
 
             <div class="field">
-                <label>Broj mobitela</label>
-                <input type="tel" name="phone" placeholder="nije obavezno ako unosite e-mail">
+                <label>Broj mobitela (nije obavezno)</label>
+                <input type="tel" name="phone" />
             </div>
 
             <div class="field">
                 <label>Dolazite li?</label>
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" name="attending" value="DA" required>
-                        <span>Da, dolazimo</span>
+                        <input type="radio" name="attending" value="DA" required />
+                        Dolazim
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="attending" value="NE" required>
-                        <span>Nažalost ne dolazimo</span>
+                        <input type="radio" name="attending" value="NE" />
+                        Ne dolazim
                     </label>
                 </div>
             </div>
 
             <div class="field">
-                <label>Članovi obitelji</label>
-                <div id="members-container">
-                    <div class="member-row">
-                        <input type="text" name="memberNames[]" placeholder="Ime i prezime">
-                    </div>
-                </div>
-                <button type="button" id="add-member" class="btn">Dodaj člana</button>
+                <label>Dodatni članovi</label>
+                <div id="members-container"></div>
+                <button type="button" class="btn" id="add-member" style="margin-top:15px;">
+                    Dodaj člana
+                </button>
             </div>
 
             <button type="submit" class="btn">Pošalji potvrdu</button>
 
-            <p id="msg" class="message"></p>
+            <p id="msg"></p>
 
         </form>
-
     </section>
 
     <script src="main.js"></script>
-    <!-- FULLSCREEN VIEWER -->
-    <div id="viewer" class="viewer">
-        <button id="closeViewer" class="viewer-close">✕</button>
-        <img id="viewer-img" src="" alt="">
-        <button id="nextSlide" class="viewer-next">›</button>
-    </div>
-
 </body>
 
 </html>

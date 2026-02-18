@@ -1,28 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* =========================================
-       1️⃣ AUTOMATSKI INTRO (ZOOM + FLIP)
-    ========================================= */
+    /* =========================
+       1️⃣ AUTOMATSKI INTRO
+    ========================== */
 
     const card = document.getElementById("card");
     const hero = document.querySelector(".hero");
 
-    // zoom već radi preko CSS animacije
-    // nakon 1.6s radimo flip
     setTimeout(() => {
         card?.classList.add("flipped");
     }, 1600);
 
-    // nakon flip-a smanjujemo hero
     setTimeout(() => {
         hero?.classList.add("sticky");
     }, 2800);
 
 
-
-    /* =========================================
-       2️⃣ FULLSCREEN VIEWER (ODVOJEN)
-    ========================================= */
+    /* =========================
+       2️⃣ FULLSCREEN VIEWER
+    ========================== */
 
     const openBtn = document.getElementById("openBtn");
     const viewer = document.getElementById("viewer");
@@ -59,10 +55,23 @@ document.addEventListener("DOMContentLoaded", () => {
     nextSlide?.addEventListener("click", next);
 
 
+    /* =========================
+       3️⃣ SCROLL NA FORMU
+    ========================== */
 
-    /* =========================================
-       3️⃣ DODAVANJE ČLANOVA
-    ========================================= */
+    const rsvpBtn = document.getElementById("rsvpBtn");
+    const formSection = document.getElementById("formSection");
+
+    rsvpBtn?.addEventListener("click", () => {
+        formSection.scrollIntoView({
+            behavior: "smooth"
+        });
+    });
+
+
+    /* =========================
+       4️⃣ DODAVANJE ČLANOVA
+    ========================== */
 
     const membersContainer = document.getElementById("members-container");
     const addMemberBtn = document.getElementById("add-member");
@@ -73,17 +82,16 @@ document.addEventListener("DOMContentLoaded", () => {
         row.className = "member-row";
 
         row.innerHTML = `
-        <input type="text" name="memberNames[]" placeholder="Ime i prezime dodatnog člana" />
-      `;
+            <input type="text" name="memberNames[]" placeholder="Ime i prezime dodatnog člana" />
+        `;
 
         membersContainer.appendChild(row);
     });
 
 
-
-    /* =========================================
-       4️⃣ SLANJE U GOOGLE SHEET
-    ========================================= */
+    /* =========================
+       5️⃣ SLANJE U GOOGLE SHEET
+    ========================== */
 
     const form = document.getElementById("rsvp-form");
     const msg = document.getElementById("msg");
@@ -94,6 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
     form?.addEventListener("submit", async (e) => {
 
         e.preventDefault();
+
+        msg.textContent = "Slanje u tijeku...";
+        msg.className = "";
 
         const formData = new FormData(form);
 
@@ -146,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            msg.textContent = data.message || "Hvala! Vaš odgovor je zaprimljen.";
+            msg.textContent = "Hvala! Vaš odgovor je zaprimljen.";
             msg.className = "message message--success";
 
             form.reset();
